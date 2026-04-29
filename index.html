@@ -1073,7 +1073,7 @@
     <div class="section-head reveal">
       <div class="mini">PRICE</div>
       <h2 class="mincho">料金の<em>目安</em></h2>
-      <p class="lead">面積に応じた分かりやすい料金設定。<br>基準単価 <b>12円/㎡</b> から。</p>
+      <p class="lead">面積に応じた分かりやすい料金設定。<br>基準単価 <b>11円/㎡</b> から。</p>
     </div>
     <div class="price-wrap">
       <div class="reveal">
@@ -1098,7 +1098,23 @@
           <div class="val">定期契約で 3〜10% 割引</div>
         </div>
 
-        <p class="price-note">※ 草の状態・契約内容・移動距離で変動します。</p>
+        <p class="price-note">※ 草の状態・契約内容で変動します。</p>
+
+        <div class="price-travel" style="margin-top:18px;padding:14px;background:#faf6e8;border:1px solid #d4c896;border-radius:6px;">
+          <div class="mincho" style="font-size:14px;font-weight:700;color:#3d4d2a;margin-bottom:8px;">移動費 (現場エリア別)</div>
+          <ul style="list-style:none;padding:0;margin:0;font-size:13px;line-height:1.8;color:#3d4d2a;">
+            <li style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dotted #d4c896;">
+              <span>吉賀町</span><span style="font-weight:700;color:#5a7a3a;">無料</span>
+            </li>
+            <li style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dotted #d4c896;">
+              <span>津和野・日原</span><span style="font-weight:700;">+3,000円</span>
+            </li>
+            <li style="display:flex;justify-content:space-between;padding:4px 0;">
+              <span>益田</span><span style="font-weight:700;">+5,000円</span>
+            </li>
+          </ul>
+          <p style="font-size:11px;color:#6a6a5a;margin-top:8px;margin-bottom:0;">※ それ以外の地域もご相談ください。</p>
+        </div>
       </div>
 
       <div class="simulator reveal">
@@ -1308,7 +1324,7 @@
   });
 
   // ===== Simulator + price tables =====
-  const BASE_RATE_M2 = 12;
+  const BASE_RATE_M2 = 11;
   const TERRAIN_OPTS = [
     {name:'平地',       mult:0.9},
     {name:'畦・法面',   mult:1.0},
