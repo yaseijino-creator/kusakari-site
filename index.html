@@ -1292,16 +1292,31 @@
           <input type="email" id="formEmail" required placeholder="例：yamada@example.com" style="font-size:17px;padding:14px;">
         </div>
         <div class="sim-field">
-          <label style="font-size:16px;font-weight:700;">④ 草刈りをしたい場所</label>
-          <input type="text" id="formLocation" placeholder="例：吉賀町○○の田んぼ、だいたい500平方メートル" style="font-size:17px;padding:14px;">
+          <label style="font-size:16px;font-weight:700;">④ 住所（草刈りをしたい場所の住所） <span style="color:#c03050;font-size:14px;">（必須）</span></label>
+          <input type="text" id="formAddress" required placeholder="例：島根県吉賀町柿木村○○番地" style="font-size:17px;padding:14px;">
         </div>
         <div class="sim-field">
-          <label style="font-size:16px;font-weight:700;">⑤ 見積もり希望日（ご希望があれば）</label>
-          <input type="text" id="formDate" placeholder="例：6月上旬、7月15日ごろ など" style="font-size:17px;padding:14px;">
+          <label style="font-size:16px;font-weight:700;">⑤ 草刈りしたい場所の詳しい説明</label>
+          <input type="text" id="formLocation" placeholder="例：田んぼの畔、約500平方メートル" style="font-size:17px;padding:14px;">
         </div>
         <div class="sim-field">
-          <label style="font-size:16px;font-weight:700;">⑥ ご要望・お気軽にどうぞ <span style="color:#c03050;font-size:14px;">（必須）</span></label>
-          <textarea id="formMessage" required placeholder="草の高さや状態、気になることなど、なんでもお書きください" style="font-size:16px;padding:14px;min-height:120px;"></textarea>
+          <label style="font-size:16px;font-weight:700;">⑥ 見積もり希望日 <span style="color:#c03050;font-size:14px;">（必須・第3希望まで入力してください）</span></label>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;margin-bottom:6px;">
+            <span style="font-size:15px;font-weight:600;white-space:nowrap;">第1希望</span>
+            <input type="date" id="formDate1" required style="font-size:16px;padding:12px;">
+          </div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;margin-bottom:6px;">
+            <span style="font-size:15px;font-weight:600;white-space:nowrap;">第2希望</span>
+            <input type="date" id="formDate2" style="font-size:16px;padding:12px;">
+          </div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;">
+            <span style="font-size:15px;font-weight:600;white-space:nowrap;">第3希望</span>
+            <input type="date" id="formDate3" style="font-size:16px;padding:12px;">
+          </div>
+        </div>
+        <div class="sim-field">
+          <label style="font-size:16px;font-weight:700;">⑦ ご要望・お気軽にどうぞ</label>
+          <textarea id="formMessage" placeholder="草の高さや状態、気になることなど、なんでもお書きください" style="font-size:16px;padding:14px;min-height:120px;"></textarea>
         </div>
         <button type="submit" style="font-size:18px;padding:18px;letter-spacing:1px;">📨 この内容で問い合わせる</button>
         <p class="form-note" style="font-size:14px;margin-top:10px;">※ ボタンを押すとメールアプリが開きます。内容を確認して「送信」を押してください。</p>
@@ -1413,18 +1428,23 @@
     const name = document.getElementById('formName').value;
     const tel = document.getElementById('formTel').value;
     const email = document.getElementById('formEmail').value;
+    const address = document.getElementById('formAddress').value;
     const loc = document.getElementById('formLocation').value;
-    const date = document.getElementById('formDate').value;
+    const date1 = document.getElementById('formDate1').value;
+    const date2 = document.getElementById('formDate2').value;
+    const date3 = document.getElementById('formDate3').value;
     const msg = document.getElementById('formMessage').value;
+    const dateStr = [date1, date2, date3].filter(d=>d).join('、') || '(未記入)';
     const body = [
       'お名前: ' + name,
       '電話番号: ' + tel,
       'メールアドレス: ' + email,
-      '草刈り場所: ' + (loc || '(未記入)'),
-      '見積希望日: ' + (date || '(未記入)'),
+      '住所: ' + address,
+      '場所の詳細: ' + (loc || '(未記入)'),
+      '見積希望日: ' + dateStr,
       '',
-      'ご相談内容:',
-      msg,
+      'ご要望:',
+      msg || '(なし)',
       '',
       '---',
       '草刈りたい 公式サイトからのお問合せ'
