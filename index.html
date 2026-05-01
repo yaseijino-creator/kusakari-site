@@ -1077,7 +1077,7 @@
     <div class="section-head reveal">
       <div class="mini">PRICE</div>
       <h2 class="mincho">料金の<em>目安</em></h2>
-      <p class="lead">面積に応じた分かりやすい料金設定。<br><b>平地 10円/㎡・畔法面 20円/㎡</b> が基準です。</p>
+      <p class="lead">面積に応じた分かりやすい料金設定。<br><b>平地 11円/㎡・畔法面 18円/㎡</b> が基準です。</p>
     </div>
     <div class="price-wrap">
       <div class="reveal">
@@ -1133,10 +1133,10 @@
         <div class="sim-field">
           <label>地形</label>
           <div class="sim-chips" id="simTerrain">
-            <div class="sim-chip active" data-mult="1.0">平地<small>10円/㎡</small></div>
-            <div class="sim-chip" data-mult="2.0">畦・法面<small>20円/㎡</small></div>
-            <div class="sim-chip" data-mult="3.0">傾斜<small>30円/㎡</small></div>
-            <div class="sim-chip" data-mult="2.5">障害物多<small>25円/㎡</small></div>
+            <div class="sim-chip active" data-mult="1.0">平地<small>11円/㎡</small></div>
+            <div class="sim-chip" data-mult="1.6364">畦・法面<small>18円/㎡</small></div>
+            <div class="sim-chip" data-mult="2.2727">傾斜<small>25円/㎡</small></div>
+            <div class="sim-chip" data-mult="2.7273">障害物多<small>30円/㎡</small></div>
           </div>
         </div>
 
@@ -1273,25 +1273,29 @@
         </div>
       </div>
 
-      <form class="contact-form" id="inquiryForm" onsubmit="submitInquiry(event)">
+      <form class="contact-form" id="inquiryForm" onsubmit="submitInquiry(event)" style="font-size:16px;">
+        <p style="background:#e8f5e9;border-left:4px solid #2d5a3d;padding:12px 14px;border-radius:6px;margin-bottom:18px;font-size:15px;line-height:1.7;">
+          📝 下の欄に入力して「問い合わせる」を押してください。<br>
+          メールアプリが開くので、そのまま送信してください。
+        </p>
         <div class="sim-field">
-          <label>NAME <span style="color:#c03050;">*</span></label>
-          <input type="text" id="formName" required>
+          <label style="font-size:16px;font-weight:700;">① お名前 <span style="color:#c03050;font-size:14px;">（必須）</span></label>
+          <input type="text" id="formName" required placeholder="例：山田 太郎" style="font-size:17px;padding:14px;">
         </div>
         <div class="sim-field">
-          <label>TEL or EMAIL <span style="color:#c03050;">*</span></label>
-          <input type="text" id="formContact" required>
+          <label style="font-size:16px;font-weight:700;">② 電話番号またはメールアドレス <span style="color:#c03050;font-size:14px;">（必須）</span></label>
+          <input type="text" id="formContact" required placeholder="例：090-1234-5678" style="font-size:17px;padding:14px;">
         </div>
         <div class="sim-field">
-          <label>LOCATION</label>
-          <input type="text" id="formLocation" placeholder="例: 吉賀町木部谷◯◯◯、約500㎡">
+          <label style="font-size:16px;font-weight:700;">③ 草刈りをしたい場所</label>
+          <input type="text" id="formLocation" placeholder="例：吉賀町○○の田んぼ、だいたい500平方メートル" style="font-size:17px;padding:14px;">
         </div>
         <div class="sim-field">
-          <label>MESSAGE <span style="color:#c03050;">*</span></label>
-          <textarea id="formMessage" required placeholder="希望時期、気になることなどご自由にお書きください"></textarea>
+          <label style="font-size:16px;font-weight:700;">④ ご要望・お気軽にどうぞ <span style="color:#c03050;font-size:14px;">（必須）</span></label>
+          <textarea id="formMessage" required placeholder="いつ頃お願いしたいか、草の高さや状態、気になることなど、なんでもお書きください" style="font-size:16px;padding:14px;min-height:120px;"></textarea>
         </div>
-        <button type="submit">SEND MESSAGE</button>
-        <p class="form-note">※ 送信ボタンでメーラーが起動します</p>
+        <button type="submit" style="font-size:18px;padding:18px;letter-spacing:1px;">📨 問い合わせる</button>
+        <p class="form-note" style="font-size:14px;margin-top:10px;">※ ボタンを押すとメールアプリが開きます。そのまま「送信」を押してください。</p>
       </form>
     </div>
   </div>
@@ -1327,12 +1331,12 @@
   });
 
   // ===== Simulator + price tables =====
-  const BASE_RATE_M2 = 10;
+  const BASE_RATE_M2 = 11;
   const TERRAIN_OPTS = [
     {name:'平地',       mult:1.0},
-    {name:'畦・法面',   mult:2.0},
-    {name:'傾斜地',     mult:3.0},
-    {name:'障害物多い', mult:2.5}
+    {name:'畦・法面',   mult:1.6364},
+    {name:'傾斜地',     mult:2.2727},
+    {name:'障害物多い', mult:2.7273}
   ];
   const AREA_SAMPLES = [300, 500, 1000, 2000, 3000];
   const sim = { terrainMult: 1.0, grassMult: 1.0, freqMult: 1.0 };
