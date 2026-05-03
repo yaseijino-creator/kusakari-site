@@ -1002,20 +1002,25 @@
         <div class="ba-col" style="position:relative;">
           <div class="label">草刈り後</div>
           <img src="img/after-far.webp" alt="草刈り後: すっきりした田んぼ周辺">
-          <div class="placeholder-badge" style="top:34px;">仮</div>
+          
         </div>
       </div>
       <div class="ba-text">伸び放題だった田畦も、ここまでキレイに</div>
+    </div>
     <div class="ba-wrap reveal" style="margin-top:32px;">
       <div style="text-align:center;font-size:12px;letter-spacing:2px;color:var(--text-light);margin-bottom:12px;">近景</div>
       <div class="ba-grid">
-        <div class="ba-col"><div class="label">草刈り前</div><img src="img/before-close.webp" alt="草刈り前 近景"></div>
+        <div class="ba-col">
+          <div class="label">草刈り前</div>
+          <img src="img/before-close.webp" alt="草刈り前 近景">
+        </div>
         <div class="ba-arrow">&#9654;</div>
-        <div class="ba-col"><div class="label">草刈り後</div><img src="img/after-close.webp" alt="草刈り後 近景"></div>
+        <div class="ba-col">
+          <div class="label">草刈り後</div>
+          <img src="img/after-close.webp" alt="草刈り後 近景">
+        </div>
       </div>
       <div class="ba-text">足元まで丁寧に、キレイな仕上がり</div>
-    </div>
-    </div>
   </div>
 </section>
 
@@ -1301,15 +1306,28 @@
           <input type="email" id="formEmail" required placeholder="例：yamada@example.com" style="font-size:17px;padding:14px;">
         </div>
         <div class="sim-field">
-          <label style="font-size:16px;font-weight:700;">④ 住所（草刈りをしたい場所の住所） <span style="color:#c03050;font-size:14px;">（必須）</span></label>
+          <label style="font-size:16px;font-weight:700;">④ ご自身の住所 <span style="color:#c03050;font-size:14px;">（必須）</span></label>
           <input type="text" id="formAddress" required placeholder="例：島根県吉賀町柿木村○○番地" style="font-size:17px;padding:14px;">
         </div>
         <div class="sim-field">
-          <label style="font-size:16px;font-weight:700;">⑤ 草刈りしたい場所の詳しい説明</label>
-          <input type="text" id="formLocation" placeholder="例：田んぼの畔、約500平方メートル" style="font-size:17px;padding:14px;">
+          <label style="font-size:16px;font-weight:700;">⑤ 草刈りをしたい場所の地名</label>
+          <input type="text" id="formLocation" placeholder="例：柿木村○○地区の田んぼ" style="font-size:17px;padding:14px;">
         </div>
         <div class="sim-field">
-          <label style="font-size:16px;font-weight:700;">⑥ 見積もり希望日 <span style="color:#c03050;font-size:14px;">（必須・第3希望まで入力してください）</span></label>
+          <label style="font-size:16px;font-weight:700;">⑥ 草刈りしたい場所の説明（選んでください）</label>
+          <select id="formLocType" style="font-size:17px;padding:14px;width:100%;margin-bottom:6px;">
+            <option value="">── 選んでください ──</option>
+            <option value="田んぼの畔（田んぼのまわり）">田んぼの畔（田んぼのまわり）</option>
+            <option value="法面・斜面（道路や田んぼの傾斜した部分）">法面・斜面（道路や田んぼの傾斜した部分）</option>
+            <option value="急な斜面・山の斜面">急な斜面・山の斜面</option>
+            <option value="空き地・遊休地">空き地・遊休地</option>
+            <option value="庭・家のまわり">庭・家のまわり</option>
+            <option value="田んぼ・畑全体">田んぼ・畑全体</option>
+            <option value="その他（下の欄に書いてください）">その他（下の欄に書いてください）</option>
+          </select>
+        </div>
+        <div class="sim-field">
+          <label style="font-size:16px;font-weight:700;">⑦ 見積もり希望日 <span style="color:#c03050;font-size:14px;">（必須・第3希望まで入力してください）</span></label>
           <div style="display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;margin-bottom:6px;">
             <span style="font-size:15px;font-weight:600;white-space:nowrap;">第1希望</span>
             <input type="date" id="formDate1" required style="font-size:16px;padding:12px;">
@@ -1324,7 +1342,7 @@
           </div>
         </div>
         <div class="sim-field">
-          <label style="font-size:16px;font-weight:700;">⑦ ご要望・お気軽にどうぞ</label>
+          <label style="font-size:16px;font-weight:700;">⑧ ご要望・お気軽にどうぞ</label>
           <textarea id="formMessage" placeholder="草の高さや状態、気になることなど、なんでもお書きください" style="font-size:16px;padding:14px;min-height:120px;"></textarea>
         </div>
         <button type="submit" style="font-size:18px;padding:18px;letter-spacing:1px;">📨 この内容で問い合わせる</button>
@@ -1439,6 +1457,7 @@
     const email = document.getElementById('formEmail').value;
     const address = document.getElementById('formAddress').value;
     const loc = document.getElementById('formLocation').value;
+    const locType = document.getElementById('formLocType').value;
     const date1 = document.getElementById('formDate1').value;
     const date2 = document.getElementById('formDate2').value;
     const date3 = document.getElementById('formDate3').value;
@@ -1448,8 +1467,9 @@
       'お名前: ' + name,
       '電話番号: ' + tel,
       'メールアドレス: ' + email,
-      '住所: ' + address,
-      '場所の詳細: ' + (loc || '(未記入)'),
+      'ご自身の住所: ' + address,
+      '草刈り場所の地名: ' + (loc || '(未記入)'),
+      '草刈り場所の種類: ' + (locType || '(未選択)'),
       '見積希望日: ' + dateStr,
       '',
       'ご要望:',
