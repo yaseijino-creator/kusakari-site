@@ -1420,7 +1420,18 @@
   setupSimChips('simTerrain', 'terrainMult');
   setupSimChips('simGrass', 'grassMult');
   setupSimChips('simFreq', 'freqMult');
-  document.getElementById('simArea').addEventListener('input', simCalc);
+  
+  // シミュレーター入力イベント（DOMContentLoaded後に確実に設定）
+  (function(){
+    function bindSimArea() {
+      var el = document.getElementById('simArea');
+      if (el) { el.removeEventListener('input',simCalc); el.addEventListener('input', simCalc); }
+      else { setTimeout(bindSimArea, 100); }
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bindSimArea);
+    } else { bindSimArea(); }
+  })();
 
   function simCalc() {
     const area = parseFloat(document.getElementById('simArea').value) || 0;
