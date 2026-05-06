@@ -1497,5 +1497,54 @@
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 </script>
 
+
+<script>
+// シミュレーター確実初期化（ページ読み込み完了後）
+window.addEventListener('load', function() {
+  var simAreaEl = document.getElementById('simArea');
+  if (!simAreaEl) return;
+  
+  // 既存リスナーを削除して再設定
+  var newEl = simAreaEl.cloneNode(true);
+  simAreaEl.parentNode.replaceChild(newEl, simAreaEl);
+  
+  newEl.addEventListener('input', function() {
+    var area = parseFloat(this.value) || 0;
+    var priceEl = document.getElementById('simPrice');
+    var perEl = document.getElementById('simPerM2');
+    if (!priceEl) return;
+    if (area === 0) { priceEl.textContent = '—'; if(perEl) perEl.textContent = '— 円/㎡'; return; }
+    
+    // アクティブチップからmultを取得
+    var tChip = document.querySelector('#simTerrain .sim-chip.active');
+    var gChip = document.querySelector('#simGrass .sim-chip.active');
+    var fChip = document.querySelector('#simFreq .sim-chip.active');
+    var tMult = tChip ? parseFloat(tChip.dataset.mult) || 1.0 : 1.0;
+    var gMult = gChip ? parseFloat(gChip.dataset.mult) || 1.0 : 1.0;
+    var fMult = fChip ? parseFloat(fChip.dataset.mult) || 1.0 : 1.0;
+    
+    var total = area * 11 * tMult * gMult * fMult;
+    if (total < 3000) total = 3000;
+    total = Math.ceil(total / 100) * 100;
+    priceEl.textContent = '¥' + total.toLocaleString();
+    if (perEl) perEl.textContent = (total/area).toFixed(1) + ' 円/㎡';
+  });
+  
+  // チップクリック時にも再計算
+  ['simTerrain','simGrass','simFreq'].forEach(function(groupId) {
+    var group = document.getElementById(groupId);
+    if (!group) return;
+    group.querySelectorAll('.sim-chip').forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        group.querySelectorAll('.sim-chip').forEach(function(c){ c.classList.remove('active'); });
+        chip.classList.add('active');
+        // シミュレーター再計算トリガー
+        var ev = new Event('input', {bubbles:true});
+        document.getElementById('simArea').dispatchEvent(ev);
+      });
+    });
+  });
+});
+</script>
 </body>
 </html>
