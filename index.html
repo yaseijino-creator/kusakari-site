@@ -152,8 +152,8 @@
     min-height: 92vh;
     display: flex; align-items: center; justify-content: flex-start;
     background:
-      linear-gradient(100deg, rgba(250,247,238,1) 0%, rgba(250,247,238,.92) 40%, rgba(250,247,238,.7) 60%, rgba(250,247,238,0) 80%),
-      url('img/hero.webp') center/cover;
+      linear-gradient(100deg, rgba(250,247,238,.95) 0%, rgba(250,247,238,.6) 45%, rgba(250,247,238,0) 70%),
+      url('img/after-far.webp') center/cover;
     color: var(--green-deep);
     padding: 100px 24px 80px;
     overflow: hidden;
@@ -184,7 +184,7 @@
     background: linear-gradient(transparent 60%, var(--accent-yellow) 60%, var(--accent-yellow) 90%, transparent 90%);
     padding: 0 4px;
   }
-  .hero .subline { text-shadow: 0 1px 2px rgba(255,255,255,0.9);
+  .hero .subline {
     font-family: "Noto Serif JP", serif;
     font-size: 18px; letter-spacing: 2px;
     color: var(--green-deep);
@@ -194,7 +194,7 @@
     background: rgba(184,146,77,.15);
     border-left: 3px solid var(--gold);
   }
-  .hero .tagline { text-shadow: 0 1px 3px rgba(255,255,255,0.8);
+  .hero .tagline {
     font-size: 14px; line-height: 2; color: var(--text-soft);
     margin-bottom: 34px;
   }
@@ -842,7 +842,7 @@
   .float-cta:hover { transform: scale(1.1) rotate(10deg); }
 
   /* ============ Scroll reveal ============ */
-  .reveal { opacity: 1; transform: none; transition: opacity .8s, transform .8s; }
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .8s, transform .8s; }
   .reveal.in { opacity: 1; transform: translateY(0); }
 </style>
 </head>
@@ -1129,7 +1129,7 @@
         </div>
       </div>
 
-      <div class="simulator reveal">
+      <div class="simulator reveal" id="simulator">
         <div class="sim-title mincho">見積シミュレーター</div>
         <div class="sim-subtitle latin">ESTIMATE SIMULATOR</div>
 
@@ -1153,7 +1153,7 @@
           <label>草の状態</label>
           <div class="sim-chips" id="simGrass">
             <div class="sim-chip active" data-mult="1.0">中度</div>
-            <div class="sim-chip" data-mult="1.5">重度</div>
+            <div class="sim-chip" data-mult="1.3">重度</div>
           </div>
         </div>
 
@@ -1420,18 +1420,7 @@
   setupSimChips('simTerrain', 'terrainMult');
   setupSimChips('simGrass', 'grassMult');
   setupSimChips('simFreq', 'freqMult');
-  
-  // シミュレーター入力イベント（DOMContentLoaded後に確実に設定）
-  (function(){
-    function bindSimArea() {
-      var el = document.getElementById('simArea');
-      if (el) { el.removeEventListener('input',simCalc); el.addEventListener('input', simCalc); }
-      else { setTimeout(bindSimArea, 100); }
-    }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', bindSimArea);
-    } else { bindSimArea(); }
-  })();
+  document.getElementById('simArea').addEventListener('input', simCalc);
 
   function simCalc() {
     const area = parseFloat(document.getElementById('simArea').value) || 0;
@@ -1497,54 +1486,5 @@
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 </script>
 
-
-<script>
-// シミュレーター確実初期化（ページ読み込み完了後）
-window.addEventListener('load', function() {
-  var simAreaEl = document.getElementById('simArea');
-  if (!simAreaEl) return;
-  
-  // 既存リスナーを削除して再設定
-  var newEl = simAreaEl.cloneNode(true);
-  simAreaEl.parentNode.replaceChild(newEl, simAreaEl);
-  
-  newEl.addEventListener('input', function() {
-    var area = parseFloat(this.value) || 0;
-    var priceEl = document.getElementById('simPrice');
-    var perEl = document.getElementById('simPerM2');
-    if (!priceEl) return;
-    if (area === 0) { priceEl.textContent = '—'; if(perEl) perEl.textContent = '— 円/㎡'; return; }
-    
-    // アクティブチップからmultを取得
-    var tChip = document.querySelector('#simTerrain .sim-chip.active');
-    var gChip = document.querySelector('#simGrass .sim-chip.active');
-    var fChip = document.querySelector('#simFreq .sim-chip.active');
-    var tMult = tChip ? parseFloat(tChip.dataset.mult) || 1.0 : 1.0;
-    var gMult = gChip ? parseFloat(gChip.dataset.mult) || 1.0 : 1.0;
-    var fMult = fChip ? parseFloat(fChip.dataset.mult) || 1.0 : 1.0;
-    
-    var total = area * 11 * tMult * gMult * fMult;
-    if (total < 3000) total = 3000;
-    total = Math.ceil(total / 100) * 100;
-    priceEl.textContent = '¥' + total.toLocaleString();
-    if (perEl) perEl.textContent = (total/area).toFixed(1) + ' 円/㎡';
-  });
-  
-  // チップクリック時にも再計算
-  ['simTerrain','simGrass','simFreq'].forEach(function(groupId) {
-    var group = document.getElementById(groupId);
-    if (!group) return;
-    group.querySelectorAll('.sim-chip').forEach(function(chip) {
-      chip.addEventListener('click', function() {
-        group.querySelectorAll('.sim-chip').forEach(function(c){ c.classList.remove('active'); });
-        chip.classList.add('active');
-        // シミュレーター再計算トリガー
-        var ev = new Event('input', {bubbles:true});
-        document.getElementById('simArea').dispatchEvent(ev);
-      });
-    });
-  });
-});
-</script>
 </body>
 </html>
