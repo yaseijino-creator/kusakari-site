@@ -1393,17 +1393,21 @@
 
   (function renderPriceTables() {
     const terrainTbody = document.querySelector('#priceTerrainTable tbody');
-    terrainTbody.innerHTML = TERRAIN_OPTS.map(t => {
-      const perM2 = BASE_RATE_M2 * t.mult;
-      return `<tr><td class="terrain">${t.name}</td><td class="amount">約 ${perM2.toFixed(0)} 円</td></tr>`;
-    }).join('');
+    if (terrainTbody) {
+      terrainTbody.innerHTML = TERRAIN_OPTS.map(t => {
+        const perM2 = BASE_RATE_M2 * t.mult;
+        return `<tr><td class="terrain">${t.name}</td><td class="amount">約 ${perM2.toFixed(0)} 円</td></tr>`;
+      }).join('');
+    }
     const areaTbody = document.querySelector('#priceAreaTable tbody');
-    areaTbody.innerHTML = AREA_SAMPLES.map(a => {
-      let est = a * BASE_RATE_M2;
-      if (est < 3000) est = 3000;
-      est = Math.ceil(est / 100) * 100;
-      return `<tr><td class="area">${a.toLocaleString()} ㎡</td><td class="amount">約 ¥${est.toLocaleString()}〜</td></tr>`;
-    }).join('');
+    if (areaTbody) {
+      areaTbody.innerHTML = AREA_SAMPLES.map(a => {
+        let est = a * BASE_RATE_M2;
+        if (est < 3000) est = 3000;
+        est = Math.ceil(est / 100) * 100;
+        return `<tr><td class="area">${a.toLocaleString()} ㎡</td><td class="amount">約 ¥${est.toLocaleString()}〜</td></tr>`;
+      }).join('');
+    }
   })();
 
   function setupSimChips(groupId, key) {
