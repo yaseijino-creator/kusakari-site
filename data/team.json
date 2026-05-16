@@ -1,6 +1,31 @@
 {
-  "updated": null,
-  "members": [],
+  "updated": "2026-05-16T21:55:44.607Z",
+  "members": [
+    {
+      "id": "m_1778968544441_617",
+      "name": "テスト 太郎",
+      "accessCode": "281037",
+      "phone": "090-0000-0000",
+      "region": "益田市",
+      "age": 35,
+      "experienceYears": 3,
+      "skills": [
+        "karibaraiki"
+      ],
+      "availableDays": [
+        "sat",
+        "sun"
+      ],
+      "truck": true,
+      "dangerousWork": true,
+      "lineGroup": true,
+      "note": "テスト送信です。自動化システムの動作確認用データです。",
+      "email": "yaseijino@gmail.com",
+      "birthday": "4/1/1990",
+      "status": "active",
+      "registeredAt": "2026-05-16T21:55:44.441Z"
+    }
+  ],
   "estimates": [],
   "note": "草刈り見積.htmlのデータタブから「📤 メンバー用ページを更新」を押すと、この内容が上書きされます。"
 }
