@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#2d5a3d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="草刈りたい メンバー">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>草刈りたい メンバーページ</title>
+<style>
+:root {
+  --green: #2d6a3f;
+  --green-dark: #1f4a2c;
+  --green-light: #e8f3ec;
+  --cream: #faf7f0;
+  --text: #2a2a2a;
+  --gray: #888;
+  --border: #ddd;
+  --warn: #f0c040;
+  --error: #c03050;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
+  color: var(--text);
+  background: var(--cream);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* ヘッダー */
+header {
+  background: var(--green);
+  color: white;
+  padding: 14px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 1px 6px rgba(0,0,0,.15);
+}
+header .title {
+  display: flex; align-items: center; justify-content: space-between;
+}
+header h1 {
+  font-size: 18px; margin: 0; font-weight: 700; letter-spacing: 0.04em;
+}
+header .me {
+  font-size: 13px; opacity: 0.9;
+}
+header .me .logout {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+/* タブ */
+.tabs {
+  display: flex;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 54px;
+  z-index: 9;
+}
+.tab-btn {
+  flex: 1;
+  padding: 14px 0;
+  background: none;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.15s;
+}
+.tab-btn.active {
+  color: var(--green);
+  border-bottom-color: var(--green);
+}
+
+/* コンテンツ */
+main {
+  padding: 16px;
+  padding-bottom: 80px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ログイン画面 */
+.login-screen {
+  max-width: 360px;
+  margin: 60px auto;
+  padding: 0 24px;
+  text-align: center;
+}
+.login-screen .icon {
+  font-size: 56px;
+  margin-bottom: 12px;
+}
+.login-screen h2 {
+  font-size: 20px;
+  color: var(--green-dark);
+  margin: 0 0 8px;
+}
+.login-screen p {
+  font-size: 14px;
+  color: var(--gray);
+  margin-bottom: 28px;
+  line-height: 1.7;
+}
+.pin-input {
+  font-size: 24px;
+  letter-spacing: 0.4em;
+  text-align: center;
+  padding: 14px;
+  width: 100%;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-family: "SF Mono", Menlo, monospace;
+  outline: none;
+}
+.pin-input:focus { border-color: var(--green); }
+.btn-primary {
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 10px;
+  width: 100%;
+  margin-top: 16px;
+  cursor: pointer;
+}
+.btn-primary:active { background: var(--green-dark); }
+.error-msg {
+  background: #fdecec;
+  color: var(--error);
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 14px;
+  font-size: 13px;
+  display: none;
+}
+.error-msg.show { display: block; }
+
+/* 案件カード */
+.empty {
+  text-align: center;
+  color: var(--gray);
+  padding: 60px 20px;
+  font-size: 14px;
+}
+.empty .ico { font-size: 48px; margin-bottom: 14px; opacity: 0.4; }
+
+.day-group {
+  margin-bottom: 28px;
+}
+.day-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 6px;
+  margin-bottom: 8px;
+  border-bottom: 2px solid var(--green);
+}
+.day-header .date {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green-dark);
+}
+.day-header .weekday {
+  font-size: 13px;
+  color: var(--green);
+  font-weight: 600;
+}
+.day-header .count {
+  margin-left: auto;
+  font-size: 11px;
+  background: var(--green-light);
+  color: var(--green-dark);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.job-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--green);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
+.job-card .customer {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.job-card .area {
+  font-size: 13px;
+  color: var(--gray);
+  margin-bottom: 10px;
+}
+.job-card .area::before { content: '📍 '; }
+.job-card .site-note {
+  font-size: 12px;
+  color: #666;
+  background: var(--green-light);
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+.job-card .assignments {
+  border-top: 1px dashed var(--border);
+  padding-top: 10px;
+  font-size: 13px;
+}
+.job-card .my-assignment {
+  background: #fff8d8;
+  border: 1px solid #f0d870;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 8px 0;
+}
+.job-card .my-assignment .label {
+  font-size: 11px;
+  color: #8a6a10;
+  font-weight: 700;
+}
+.job-card .my-assignment .detail {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 2px;
+}
+.job-card .my-assignment .pay {
+  font-size: 12px;
+  color: #6a5010;
+  margin-top: 4px;
+}
+.job-card .other-members {
+  font-size: 11px;
+  color: var(--gray);
+  margin-top: 6px;
+}
+
+/* 案件一覧（タブ2）の追加スタイル */
+.list-row {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.list-row .top {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+}
+.list-row .date-pill {
+  font-size: 12px;
+  background: var(--green);
+  color: white;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+.list-row .name {
+  font-weight: 700; font-size: 15px;
+}
+.list-row .meta {
+  font-size: 12px; color: var(--gray);
+}
+.list-row .my-mark {
+  font-size: 12px;
+  color: var(--green-dark);
+  background: var(--green-light);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  display: inline-block;
+  margin-right: 4px;
+}
+
+/* フッターの更新時刻 */
+.footer-info {
+  text-align: center;
+  color: var(--gray);
+  font-size: 11px;
+  margin-top: 20px;
+  padding: 12px;
+}
+.refresh-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--green);
+  padding: 6px 14px;
+  border-radius: 14px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+/* ローディング */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--gray);
+}
+.loading .spinner {
+  width: 32px; height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* LINE連絡先ボタン */
+.line-contact {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: #06C755;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 28px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,.2);
+  z-index: 5;
+}
+.line-contact::before { content: '💬 '; }
+</style>
+</head>
+<body>
+
+<!-- ========= ログイン画面 ========= -->
+<div id="loginScreen" class="login-screen" style="display:none;">
+  <div class="icon">🌿</div>
+  <h2>草刈りたい メンバー</h2>
+  <p>なるさんから受け取った<br>6桁のアクセスコードを入力してください。</p>
+  <input type="tel" id="pinInput" class="pin-input" inputmode="numeric" maxlength="6" placeholder="------" autofocus>
+  <button class="btn-primary" onclick="tryLogin()">入る</button>
+  <div id="errorMsg" class="error-msg"></div>
+  <p style="margin-top:30px;font-size:11px;color:#aaa;">コードが分からない場合はLINEで「コードを教えて」と送ってください。</p>
+</div>
+
+<!-- ========= ロード画面 ========= -->
+<div id="loadingScreen" class="loading" style="display:none;">
+  <div class="spinner"></div>
+  <div>読み込み中...</div>
+</div>
+
+<!-- ========= メイン画面 ========= -->
+<div id="mainScreen" style="display:none;">
+  <header>
+    <div class="title">
+      <h1>🌿 草刈りたい</h1>
+      <div class="me">
+        <span id="meName">—</span> さん
+        <button class="logout" onclick="logout()">ログアウト</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="schedule">📅 スケジュール</button>
+    <button class="tab-btn" data-tab="list">📋 案件一覧</button>
+  </nav>
+
+  <main>
+    <div id="tab-schedule" class="tab-panel active">
+      <div id="scheduleBody"></div>
+    </div>
+    <div id="tab-list" class="tab-panel">
+      <div id="listBody"></div>
+    </div>
+
+    <div class="footer-info">
+      <div>最終更新: <span id="lastUpdated">—</span></div>
+      <button class="refresh-btn" onclick="reloadData()">🔄 再読み込み</button>
+    </div>
+  </main>
+
+  <a href="https://line.me/R/ti/p/@323cynso" class="line-contact" target="_blank">LINEで連絡</a>
+</div>
+
+<script>
+const TEAM_DATA_URL = '/data/team.json';
+const STORAGE_KEY = 'kusakari_team_access';
+
+let myCode = null;
+let teamData = null;
+let me = null;
+
+// ============ 起動処理 ============
+(async function init() {
+  // URL から ?c=XXXXXX を取得 → localStorage に保存 → URL clean
+  const url = new URL(location.href);
+  const codeFromUrl = url.searchParams.get('c');
+  if (codeFromUrl) {
+    localStorage.setItem(STORAGE_KEY, codeFromUrl);
+    url.searchParams.delete('c');
+    history.replaceState({}, '', url.toString());
+  }
+  myCode = localStorage.getItem(STORAGE_KEY);
+
+  if (!myCode) {
+    showLogin();
+    return;
+  }
+  await loadAndRender();
+})();
+
+function showLogin() {
+  document.getElementById('loginScreen').style.display = 'block';
+  document.getElementById('mainScreen').style.display = 'none';
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('pinInput').focus();
+}
+
+function showLoading() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainScreen').style.display = 'none';
+  document.getElementById('loadingScreen').style.display = 'block';
+}
+
+function showMain() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('mainScreen').style.display = 'block';
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+async function tryLogin() {
+  const code = document.getElementById('pinInput').value.trim();
+  if (!/^\d{6}$/.test(code)) {
+    showError('6桁の数字を入力してください');
+    return;
+  }
+  document.getElementById('errorMsg').classList.remove('show');
+  localStorage.setItem(STORAGE_KEY, code);
+  myCode = code;
+  await loadAndRender();
+}
+
+document.getElementById('pinInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') tryLogin();
+});
+
+async function loadAndRender() {
+  showLoading();
+  try {
+    // キャッシュ回避でtimestampを付ける
+    const r = await fetch(TEAM_DATA_URL + '?t=' + Date.now());
+    if (!r.ok) throw new Error('データ取得失敗 (' + r.status + ')');
+    teamData = await r.json();
+  } catch (e) {
+    localStorage.removeItem(STORAGE_KEY);
+    showLogin();
+    showError('データを取得できませんでした。なるさんに連絡してください。');
+    return;
+  }
+  // アクセスコードで自分を特定
+  me = (teamData.members || []).find(m => String(m.accessCode) === String(myCode));
+  if (!me) {
+    localStorage.removeItem(STORAGE_KEY);
+    showLogin();
+    showError('このコードは無効です。最新のコードをLINEで受け取ってください。');
+    return;
+  }
+  // レンダリング
+  document.getElementById('meName').textContent = me.name || '—';
+  document.getElementById('lastUpdated').textContent = formatUpdated(teamData.updated);
+  renderSchedule();
+  renderList();
+  showMain();
+}
+
+function logout() {
+  if (!confirm('ログアウトしますか？\n（再ログインには6桁コードが必要です）')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  myCode = null;
+  showLogin();
+}
+
+async function reloadData() {
+  await loadAndRender();
+}
+
+function formatUpdated(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  return d.toLocaleString('ja-JP', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+// ============ タブ切替 ============
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ============ 自分の担当案件を抽出 ============
+function myJobs() {
+  if (!teamData || !me) return [];
+  return (teamData.estimates || []).filter(e =>
+    (e.assignments || []).some(a => String(a.memberId) === String(me.id))
+  );
+}
+
+function myAssignment(est) {
+  return (est.assignments || []).find(a => String(a.memberId) === String(me.id));
+}
+
+function otherAssignments(est) {
+  return (est.assignments || []).filter(a => String(a.memberId) !== String(me.id));
+}
+
+// ============ スケジュール表示 ============
+function renderSchedule() {
+  const jobs = myJobs().filter(e => e.scheduledDate);
+  jobs.sort((a, b) => (a.scheduledDate || '').localeCompare(b.scheduledDate || ''));
+
+  const el = document.getElementById('scheduleBody');
+  if (jobs.length === 0) {
+    el.innerHTML = `<div class="empty">
+      <div class="ico">📅</div>
+      <div>予定された担当案件はまだありません。</div>
+      <div style="margin-top:6px;font-size:12px;">新しい案件が決まったらここに表示されます。</div>
+    </div>`;
+    return;
+  }
+
+  // 日付ごとにグルーピング
+  const groups = {};
+  jobs.forEach(j => {
+    const d = j.scheduledDate;
+    if (!groups[d]) groups[d] = [];
+    groups[d].push(j);
+  });
+
+  el.innerHTML = Object.keys(groups).sort().map(date => `
+    <div class="day-group">
+      <div class="day-header">
+        <span class="date">${formatDate(date)}</span>
+        <span class="weekday">(${weekday(date)})</span>
+        <span class="count">${groups[date].length} 件</span>
+      </div>
+      ${groups[date].map(jobCard).join('')}
+    </div>
+  `).join('');
+}
+
+// ============ 案件一覧表示 ============
+function renderList() {
+  const jobs = myJobs();
+  // 日付ある→未来順、日付なし→末尾
+  jobs.sort((a, b) => {
+    if (a.scheduledDate && b.scheduledDate) return a.scheduledDate.localeCompare(b.scheduledDate);
+    if (a.scheduledDate) return -1;
+    if (b.scheduledDate) return 1;
+    return 0;
+  });
+
+  const el = document.getElementById('listBody');
+  if (jobs.length === 0) {
+    el.innerHTML = `<div class="empty">
+      <div class="ico">📋</div>
+      <div>担当案件はまだありません。</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = jobs.map(jobCard).join('');
+}
+
+// ============ 案件カード ============
+function jobCard(est) {
+  const mine = myAssignment(est) || {};
+  const others = otherAssignments(est);
+  return `
+    <div class="job-card">
+      <div class="customer">${esc(est.customerLabel || '—')}</div>
+      <div class="area">${esc(est.addressArea || '')}${est.totalArea ? ' / ' + est.totalArea + '㎡' : ''}</div>
+      ${est.siteNote ? `<div class="site-note">📝 ${esc(est.siteNote)}</div>` : ''}
+      <div class="my-assignment">
+        <div class="label">あなたの担当</div>
+        <div class="detail">
+          ${esc(machineLabel(mine.machine))}
+          ${mine.area ? '・' + mine.area + '㎡' : ''}
+          ${mine.hours ? '・約' + formatHours(mine.hours) : ''}
+        </div>
+        ${mine.payment ? `<div class="pay">委託金: ¥${(mine.payment).toLocaleString()}</div>` : ''}
+      </div>
+      ${others.length > 0 ? `
+        <div class="other-members">
+          他の担当: ${others.map(o => esc((o.memberName || '?') + '(' + machineLabel(o.machine) + ')')).join(', ')}
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+// ============ ユーティリティ ============
+function esc(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+function formatDate(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  if (isNaN(d.getTime())) return iso;
+  return (d.getMonth() + 1) + '/' + d.getDate();
+}
+function weekday(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  if (isNaN(d.getTime())) return '';
+  return ['日','月','火','水','木','金','土'][d.getDay()];
+}
+function formatHours(h) {
+  if (h >= 1) return (Math.round(h * 10) / 10) + '時間';
+  return Math.round(h * 60) + '分';
+}
+function machineLabel(m) {
+  return ({
+    'karibaraiki': '🌿 刈払機',
+    'homen': '🚜 方面草刈機',
+    'hammer': '⚙️ ハンマーモア',
+    '刈払機': '🌿 刈払機',
+    '方面草刈機': '🚜 方面草刈機',
+    'ハンマーモア': '⚙️ ハンマーモア'
+  })[m] || m || '機械未定';
+}
+</script>
+</body>
+</html>
