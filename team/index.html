@@ -798,7 +798,7 @@ function jobCard(est) {
           ${mine.area ? '・' + mine.area + '㎡' : ''}
           ${mine.hours ? `<span class="hours-hint">・目安 ${formatHours(mine.hours)}</span>` : ''}
         </div>
-        ${mine.payment ? `<div class="pay">委託金: ¥${(mine.payment).toLocaleString()} <span class="pay-note">（時間単価で計算）</span></div>` : ''}
+        ${mine.payment ? `<div class="pay">委託金: ¥${(mine.payment).toLocaleString()} <span class="pay-note">（担当面積×単価）</span></div>` : ''}
       </div>
       ${others.length > 0 ? `
         <div class="other-members">
