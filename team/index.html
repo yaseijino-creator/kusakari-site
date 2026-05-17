@@ -332,6 +332,54 @@ main {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* 編集フォーム */
+.edit-form { padding: 4px 0; }
+.edit-form h2 {
+  font-size: 18px; color: var(--green-dark); margin: 8px 0 4px;
+}
+.edit-form .hint {
+  font-size: 12px; color: var(--gray); margin-bottom: 16px;
+}
+.edit-form .field { margin-bottom: 14px; }
+.edit-form label {
+  display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 5px;
+}
+.edit-form input[type="text"], .edit-form input[type="tel"], .edit-form input[type="email"], .edit-form input[type="number"], .edit-form textarea, .edit-form select {
+  width: 100%; padding: 11px 12px; font-size: 16px; border: 1px solid #d0d0d0; border-radius: 8px;
+  background: white; font-family: inherit;
+}
+.edit-form input:focus, .edit-form textarea:focus, .edit-form select:focus {
+  outline: none; border-color: var(--green);
+}
+.edit-form .chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.edit-form .chip {
+  padding: 8px 14px; font-size: 13px; border: 1.5px solid #d0d0d0; border-radius: 18px; background: white;
+  cursor: pointer; user-select: none;
+}
+.edit-form .chip.active {
+  background: var(--green); color: white; border-color: var(--green);
+}
+.edit-form .switch-row {
+  display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+  background: #f7faf7; border-radius: 8px; border: 1px solid #e0e0e0; font-size: 14px;
+}
+.edit-form .submit-row {
+  margin-top: 22px; padding-top: 16px; border-top: 1px solid #e0e0e0;
+}
+.edit-form button[type="submit"] {
+  width: 100%; padding: 14px; font-size: 15px; font-weight: 700;
+  background: var(--green); color: white; border: none; border-radius: 10px; cursor: pointer;
+}
+.edit-form button[type="submit"]:active { background: var(--green-dark); }
+.edit-form button[type="submit"][disabled] { background: #aaa; cursor: not-allowed; }
+.edit-result {
+  margin-top: 14px; padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.5;
+}
+.edit-result.ok { background: #e6efe6; color: var(--green-dark); border: 1px solid #a5d6a7; }
+.edit-result.ng { background: #fdecec; color: var(--error); border: 1px solid #f0b0b0; }
+
 /* 右下フローティングボタン */
 .float-actions {
   position: fixed;
@@ -394,8 +442,9 @@ main {
   </header>
 
   <nav class="tabs">
-    <button class="tab-btn active" data-tab="schedule">📅 スケジュール</button>
-    <button class="tab-btn" data-tab="list">📋 案件一覧</button>
+    <button class="tab-btn active" data-tab="schedule">📅 予定</button>
+    <button class="tab-btn" data-tab="list">📋 案件</button>
+    <button class="tab-btn" data-tab="edit">📝 編集</button>
   </nav>
 
   <main>
@@ -404,6 +453,9 @@ main {
     </div>
     <div id="tab-list" class="tab-panel">
       <div id="listBody"></div>
+    </div>
+    <div id="tab-edit" class="tab-panel">
+      <div id="editBody"></div>
     </div>
 
     <div class="footer-info">
@@ -512,7 +564,18 @@ async function loadAndRender() {
   document.getElementById('lastUpdated').textContent = formatUpdated(teamData.updated);
   renderSchedule();
   renderList();
+  renderEditForm();
   showMain();
+
+  // URLパラメータ ?edit=1 で編集タブを開く
+  if (new URL(location.href).searchParams.get('edit') === '1') {
+    const editBtn = document.querySelector('.tab-btn[data-tab="edit"]');
+    if (editBtn) editBtn.click();
+    // URL からパラメータを削除
+    const url = new URL(location.href);
+    url.searchParams.delete('edit');
+    history.replaceState({}, '', url.toString());
+  }
 }
 
 function logout() {
@@ -641,6 +704,209 @@ function jobCard(est) {
       ` : ''}
     </div>
   `;
+}
+
+// ============ 編集タブ ============
+// Apps Script Web App のエンドポイント (デプロイ後に置き換える)
+const EDIT_API_URL = 'https://script.google.com/macros/s/REPLACE_WITH_DEPLOYED_URL/exec';
+
+const SKILL_OPTIONS = [
+  { value: 'karibaraiki', label: '🌿 刈払機' },
+  { value: 'homen',       label: '🚜 方面草刈機' },
+  { value: 'hammer',      label: '⚙️ ハンマーモア' }
+];
+const DAY_OPTIONS = [
+  { value: 'mon', label: '月' },
+  { value: 'tue', label: '火' },
+  { value: 'wed', label: '水' },
+  { value: 'thu', label: '木' },
+  { value: 'fri', label: '金' },
+  { value: 'sat', label: '土' },
+  { value: 'sun', label: '日' }
+];
+
+function renderEditForm() {
+  const el = document.getElementById('editBody');
+  if (!me) {
+    el.innerHTML = `<div class="empty"><div class="ico">📝</div><div>ログイン情報を確認できません。</div></div>`;
+    return;
+  }
+
+  const apiReady = !EDIT_API_URL.includes('REPLACE_WITH_DEPLOYED_URL');
+  const apiWarning = apiReady ? '' : `
+    <div class="edit-result ng" style="margin-bottom:14px;">
+      ⚠️ 編集機能はまだ管理者がセットアップ中です。<br>
+      もう少しお待ちください、または公式LINEでお問い合わせください。
+    </div>`;
+
+  const checkedSkills = new Set(me.skills || []);
+  const checkedDays   = new Set(me.availableDays || []);
+
+  el.innerHTML = `
+    <div class="edit-form">
+      <h2>📝 登録内容の編集</h2>
+      <p class="hint">変更したい項目だけ修正して、一番下の「保存」を押してください。</p>
+      ${apiWarning}
+
+      <form id="memberEditForm">
+        <div class="field">
+          <label>名前</label>
+          <input type="text" name="name" value="${esc(me.name||'')}" required>
+        </div>
+
+        <div class="field">
+          <label>電話番号</label>
+          <input type="tel" name="phone" value="${esc(me.phone||'')}" required>
+        </div>
+
+        <div class="field">
+          <label>お住まいの地域</label>
+          <input type="text" name="region" value="${esc(me.region||'')}" required>
+        </div>
+
+        <div class="field">
+          <label>年齢</label>
+          <input type="number" name="age" value="${me.age||''}" min="18" max="80">
+        </div>
+
+        <div class="field">
+          <label>草刈り経験年数</label>
+          <input type="number" name="experienceYears" value="${me.experienceYears||''}" min="0" max="60">
+        </div>
+
+        <div class="field">
+          <label>使える機械（タップで切替）</label>
+          <div class="chips" id="editSkills">
+            ${SKILL_OPTIONS.map(s => `
+              <div class="chip ${checkedSkills.has(s.value)?'active':''}" data-skill="${s.value}">${s.label}</div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="field">
+          <label>作業可能曜日（タップで切替）</label>
+          <div class="chips" id="editDays">
+            ${DAY_OPTIONS.map(d => `
+              <div class="chip ${checkedDays.has(d.value)?'active':''}" data-day="${d.value}">${d.label}</div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="switch-row">
+            <input type="checkbox" id="editTruck" ${me.truck?'checked':''}>
+            <label for="editTruck" style="margin:0;font-size:14px;font-weight:500;cursor:pointer;">軽トラあり</label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="switch-row">
+            <input type="checkbox" id="editDanger" ${me.dangerousWork?'checked':''}>
+            <label for="editDanger" style="margin:0;font-size:14px;font-weight:500;cursor:pointer;">急傾斜地での作業OK</label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="switch-row">
+            <input type="checkbox" id="editLineGroup" ${me.lineGroup?'checked':''}>
+            <label for="editLineGroup" style="margin:0;font-size:14px;font-weight:500;cursor:pointer;">LINEグループ参加OK</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>自己紹介・備考</label>
+          <textarea name="note" rows="3">${esc(me.note||'')}</textarea>
+        </div>
+
+        <div class="submit-row">
+          <button type="submit" id="editSubmitBtn" ${apiReady?'':'disabled'}>💾 変更を保存</button>
+          <div id="editResult" style="display:none;"></div>
+        </div>
+      </form>
+    </div>
+  `;
+
+  // チップのトグル
+  el.querySelectorAll('#editSkills .chip').forEach(c => {
+    c.addEventListener('click', () => c.classList.toggle('active'));
+  });
+  el.querySelectorAll('#editDays .chip').forEach(c => {
+    c.addEventListener('click', () => c.classList.toggle('active'));
+  });
+
+  // 送信
+  document.getElementById('memberEditForm').addEventListener('submit', handleEditSubmit);
+}
+
+async function handleEditSubmit(ev) {
+  ev.preventDefault();
+  const btn = document.getElementById('editSubmitBtn');
+  const resultEl = document.getElementById('editResult');
+  resultEl.style.display = 'none';
+  resultEl.className = '';
+
+  if (EDIT_API_URL.includes('REPLACE_WITH_DEPLOYED_URL')) {
+    showEditResult('ng', '管理者の設定が未完了のため保存できません。');
+    return;
+  }
+  if (!me || !me.accessCode || !me.email) {
+    showEditResult('ng', 'ログイン情報を確認できません。再ログインしてください。');
+    return;
+  }
+
+  const form = ev.target;
+  const skills = [...form.querySelectorAll('#editSkills .chip.active')].map(c => c.dataset.skill);
+  const availableDays = [...form.querySelectorAll('#editDays .chip.active')].map(c => c.dataset.day);
+
+  const payload = {
+    accessCode: me.accessCode,
+    email: me.email,
+    name: form.name.value.trim(),
+    phone: form.phone.value.trim(),
+    region: form.region.value.trim(),
+    age: parseInt(form.age.value) || 0,
+    experienceYears: parseInt(form.experienceYears.value) || 0,
+    skills,
+    availableDays,
+    truck: document.getElementById('editTruck').checked,
+    dangerousWork: document.getElementById('editDanger').checked,
+    lineGroup: document.getElementById('editLineGroup').checked,
+    note: form.note.value.trim()
+  };
+
+  btn.disabled = true;
+  btn.textContent = '保存中…';
+
+  try {
+    // Apps Script Web App は preflight 回避のため Content-Type: text/plain で送る
+    const r = await fetch(EDIT_API_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+    });
+    const data = await r.json();
+    if (data.ok) {
+      showEditResult('ok',
+        `✅ 保存しました（${data.changedCount || 0}項目が更新されました）。`
+      );
+      // ローカルの me も更新
+      Object.assign(me, payload);
+    } else {
+      showEditResult('ng',
+        `❌ 保存失敗: ${esc(data.error || '不明なエラー')}${data.detail ? '<br>' + esc(String(data.detail).substring(0, 200)) : ''}`
+      );
+    }
+  } catch (e) {
+    showEditResult('ng', `❌ 通信エラー: ${esc(e.message)}`);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '💾 変更を保存';
+  }
+}
+
+function showEditResult(type, html) {
+  const el = document.getElementById('editResult');
+  el.className = 'edit-result ' + type;
+  el.innerHTML = html;
+  el.style.display = 'block';
 }
 
 // ============ ユーティリティ ============
