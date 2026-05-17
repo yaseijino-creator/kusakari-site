@@ -332,22 +332,34 @@ main {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* LINE連絡先ボタン */
-.line-contact {
+/* 右下フローティングボタン */
+.float-actions {
   position: fixed;
   bottom: 16px;
   right: 16px;
-  background: #06C755;
-  color: white;
-  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 5;
+}
+.fab {
+  padding: 12px 18px;
   border-radius: 28px;
   font-size: 13px;
   font-weight: 700;
   text-decoration: none;
+  text-align: center;
   box-shadow: 0 4px 12px rgba(0,0,0,.2);
-  z-index: 5;
+  color: white;
 }
-.line-contact::before { content: '💬 '; }
+.fab-report {
+  background: #d9822b;
+}
+.fab-line {
+  background: #06C755;
+}
+.fab-report::before { content: '📋 '; }
+.fab-line::before { content: '💬 '; }
 </style>
 </head>
 <body>
@@ -400,7 +412,10 @@ main {
     </div>
   </main>
 
-  <a href="https://line.me/R/ti/p/@323cynso" class="line-contact" target="_blank">LINEで連絡</a>
+  <div class="float-actions">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfm4ca3i_ngOom8-1vedJP7tu1mgsJaBeXh_0CipcdxyY8a1g/viewform" class="fab fab-report" target="_blank">作業報告</a>
+    <a href="https://line.me/R/ti/p/@323cynso" class="fab fab-line" target="_blank">LINEで連絡</a>
+  </div>
 </div>
 
 <script>
