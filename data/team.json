@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-17T23:25:41.810Z",
+  "updated": "2026-05-17T23:27:33.404Z",
   "members": [
     {
       "id": "m_1778968544441_617",
@@ -63,7 +63,7 @@
           "payment": 5999.055555555556
         }
       ],
-      "recruiting": true
+      "recruiting": false
     }
   ]
 }
