@@ -257,6 +257,49 @@ main {
   color: var(--gray);
   margin-top: 6px;
 }
+/* 募集中カード */
+.recruiting-card {
+  border-left: 4px solid #2d7a4f;
+  background: #f6fbf7;
+  position: relative;
+}
+.recruiting-badge {
+  display: inline-block;
+  background: #2d7a4f;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  letter-spacing: 0.04em;
+}
+.schedule-info {
+  font-size: 13px;
+  color: #2d5a3d;
+  margin-top: 6px;
+  font-weight: 600;
+}
+.schedule-info.pending {
+  color: var(--gray);
+  font-weight: 400;
+}
+.want-btn {
+  display: block;
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: #2d7a4f;
+  color: #fff;
+  text-align: center;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 15px;
+  transition: background 0.15s;
+}
+.want-btn:hover, .want-btn:active {
+  background: #225f3c;
+}
 
 /* 案件一覧（タブ2）の追加スタイル */
 .list-row {
@@ -629,6 +672,25 @@ function otherAssignments(est) {
   return (est.assignments || []).filter(a => String(a.memberId) !== String(me.id));
 }
 
+// 募集中の案件（recruiting=true で、まだ自分が担当に入ってないもの）
+function recruitingJobs() {
+  if (!teamData || !me) return [];
+  return (teamData.estimates || []).filter(e =>
+    e.recruiting === true &&
+    !(e.assignments || []).some(a => String(a.memberId) === String(me.id))
+  );
+}
+
+// 草刈り隊メンバーLINE OA（@561zguua）にプリ入力でトーク起動
+const RECRUIT_LINE_OA_ID = '@561zguua';
+function lineWantUrl(est) {
+  const label = est.customerLabel || '案件';
+  const date = est.scheduledDate ? ` (${formatDate(est.scheduledDate)})` : '';
+  const myName = (me && me.name) ? me.name : 'メンバー';
+  const text = `${myName}です。\n「${label}${date}」の案件、やりたいです！`;
+  return `https://line.me/R/oaMessage/${encodeURIComponent(RECRUIT_LINE_OA_ID)}/?${encodeURIComponent(text)}`;
+}
+
 // ============ スケジュール表示 ============
 function renderSchedule() {
   const jobs = myJobs().filter(e => e.scheduledDate);
@@ -664,9 +726,9 @@ function renderSchedule() {
   `).join('');
 }
 
-// ============ 案件一覧表示 ============
+// ============ 募集中案件タブ ============
 function renderList() {
-  const jobs = myJobs();
+  const jobs = recruitingJobs();
   // 日付ある→未来順、日付なし→末尾
   jobs.sort((a, b) => {
     if (a.scheduledDate && b.scheduledDate) return a.scheduledDate.localeCompare(b.scheduledDate);
@@ -679,11 +741,36 @@ function renderList() {
   if (jobs.length === 0) {
     el.innerHTML = `<div class="empty">
       <div class="ico">📋</div>
-      <div>担当案件はまだありません。</div>
+      <div>募集中の案件はありません。</div>
+      <div style="margin-top:6px;font-size:12px;">新しい募集はここに表示されます。</div>
     </div>`;
     return;
   }
-  el.innerHTML = jobs.map(jobCard).join('');
+  el.innerHTML = jobs.map(recruitingCard).join('');
+}
+
+// 募集中カード（「やりたい」ボタン付き）
+function recruitingCard(est) {
+  const others = est.assignments || [];
+  const dateLine = est.scheduledDate
+    ? `<div class="schedule-info">📅 作業予定: ${formatDate(est.scheduledDate)} (${weekday(est.scheduledDate)})</div>`
+    : `<div class="schedule-info pending">📅 作業日: 調整中</div>`;
+  const othersBlock = others.length > 0
+    ? `<div class="other-members">現在の担当: ${others.map(o => esc((o.memberName || '?') + '(' + machineLabel(o.machine) + ')')).join(', ')}</div>`
+    : `<div class="other-members">現在の担当: まだ未定</div>`;
+  return `
+    <div class="job-card recruiting-card">
+      <div class="recruiting-badge">📢 募集中</div>
+      <div class="customer">${esc(est.customerLabel || '—')}</div>
+      <div class="area">${esc(est.addressArea || '')}${est.totalArea ? ' / ' + est.totalArea + '㎡' : ''}</div>
+      ${dateLine}
+      ${est.siteNote ? `<div class="site-note">📝 ${esc(est.siteNote)}</div>` : ''}
+      ${othersBlock}
+      <a class="want-btn" href="${lineWantUrl(est)}" target="_blank" rel="noopener">
+        🙋‍♂️ やりたい
+      </a>
+    </div>
+  `;
 }
 
 // ============ 案件カード ============
