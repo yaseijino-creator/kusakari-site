@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-17T23:28:23.596Z",
+  "updated": "2026-05-17T23:29:14.408Z",
   "members": [
     {
       "id": "m_1778968544441_617",
@@ -64,6 +64,16 @@
         }
       ],
       "recruiting": false
+    },
+    {
+      "id": "e177906049859218",
+      "customerLabel": "保存テスト",
+      "addressArea": "",
+      "siteNote": "",
+      "scheduledDate": null,
+      "totalArea": 500,
+      "assignments": [],
+      "recruiting": true
     }
   ]
 }
