@@ -576,6 +576,13 @@ async function loadAndRender() {
     url.searchParams.delete('edit');
     history.replaceState({}, '', url.toString());
   }
+
+  // URL hash (#schedule / #list / #edit) でタブを直接開く
+  const hash = (location.hash || '').slice(1);
+  if (['schedule', 'list', 'edit'].includes(hash)) {
+    const btn = document.querySelector('.tab-btn[data-tab="' + hash + '"]');
+    if (btn) btn.click();
+  }
 }
 
 function logout() {
