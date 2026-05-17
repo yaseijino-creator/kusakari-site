@@ -1,10 +1,31 @@
 {
-  "updated": "2026-05-17T23:02:26.311Z",
+  "updated": "2026-05-18T00:00:00.000Z",
   "members": [
     {
       "id": "m_1778968544441_617",
       "name": "テスト 太郎",
-      "accessCode": "281037"
+      "accessCode": "281037",
+      "phone": "090-0000-0000",
+      "region": "益田市",
+      "age": 35,
+      "experienceYears": 3,
+      "skills": [
+        "karibaraiki"
+      ],
+      "availableDays": [
+        "fri",
+        "sat",
+        "sun"
+      ],
+      "truck": true,
+      "dangerousWork": true,
+      "lineGroup": true,
+      "note": "テスト送信です。自動化システムの動作確認用データです。",
+      "email": "yaseijino@gmail.com",
+      "birthday": "4/1/1990",
+      "status": "active",
+      "registeredAt": "2026-05-16T21:55:44.441Z",
+      "updatedAt": "2026-05-17T03:04:22.898Z"
     }
   ],
   "estimates": [
