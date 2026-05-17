@@ -247,6 +247,15 @@ main {
   color: var(--text);
   margin-top: 2px;
 }
+.job-card .my-assignment .hours-hint {
+  color: var(--gray);
+  font-size: 12px;
+}
+.job-card .my-assignment .pay-note {
+  color: var(--gray);
+  font-size: 11px;
+  font-weight: 400;
+}
 .job-card .my-assignment .pay {
   font-size: 12px;
   color: #6a5010;
@@ -787,9 +796,9 @@ function jobCard(est) {
         <div class="detail">
           ${esc(machineLabel(mine.machine))}
           ${mine.area ? '・' + mine.area + '㎡' : ''}
-          ${mine.hours ? '・約' + formatHours(mine.hours) : ''}
+          ${mine.hours ? `<span class="hours-hint">・目安 ${formatHours(mine.hours)}</span>` : ''}
         </div>
-        ${mine.payment ? `<div class="pay">委託金: ¥${(mine.payment).toLocaleString()}</div>` : ''}
+        ${mine.payment ? `<div class="pay">委託金: ¥${(mine.payment).toLocaleString()} <span class="pay-note">（担当面積に応じて支払い）</span></div>` : ''}
       </div>
       ${others.length > 0 ? `
         <div class="other-members">
