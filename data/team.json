@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-18T00:00:00.000Z",
+  "updated": "2026-05-17T23:19:54.611Z",
   "members": [
     {
       "id": "m_1778968544441_617",
@@ -10,7 +10,8 @@
       "age": 35,
       "experienceYears": 3,
       "skills": [
-        "karibaraiki"
+        "karibaraiki",
+        "homen"
       ],
       "availableDays": [
         "fri",
@@ -25,7 +26,7 @@
       "birthday": "4/1/1990",
       "status": "active",
       "registeredAt": "2026-05-16T21:55:44.441Z",
-      "updatedAt": "2026-05-17T03:04:22.898Z"
+      "updatedAt": "2026-05-17T23:19:54.611Z"
     }
   ],
   "estimates": [
