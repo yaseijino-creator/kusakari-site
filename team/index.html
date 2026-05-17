@@ -673,8 +673,14 @@ function myJobs() {
   );
 }
 
+// 自分の担当 (複数機械対応・配列で返す)
+function myAssignments(est) {
+  return (est.assignments || []).filter(a => String(a.memberId) === String(me.id));
+}
+
+// 互換のため最初の担当だけ返す版も残す
 function myAssignment(est) {
-  return (est.assignments || []).find(a => String(a.memberId) === String(me.id));
+  return myAssignments(est)[0];
 }
 
 function otherAssignments(est) {
@@ -784,21 +790,23 @@ function recruitingCard(est) {
 
 // ============ 案件カード ============
 function jobCard(est) {
-  const mine = myAssignment(est) || {};
+  const mineAll = myAssignments(est);
   const others = otherAssignments(est);
+  const totalPay = mineAll.reduce((s, a) => s + (a.payment || 0), 0);
+  const detailRows = mineAll.map(a => `
+    <div class="detail">
+      ${esc(machineLabel(a.machine))}${a.area ? '・' + a.area + '㎡' : ''}${a.hours ? `<span class="hours-hint">・目安 ${formatHours(a.hours)}</span>` : ''}
+    </div>
+  `).join('');
   return `
     <div class="job-card">
       <div class="customer">${esc(est.customerLabel || '—')}</div>
       <div class="area">${esc(est.addressArea || '')}${est.totalArea ? ' / ' + est.totalArea + '㎡' : ''}</div>
       ${est.siteNote ? `<div class="site-note">📝 ${esc(est.siteNote)}</div>` : ''}
       <div class="my-assignment">
-        <div class="label">あなたの担当</div>
-        <div class="detail">
-          ${esc(machineLabel(mine.machine))}
-          ${mine.area ? '・' + mine.area + '㎡' : ''}
-          ${mine.hours ? `<span class="hours-hint">・目安 ${formatHours(mine.hours)}</span>` : ''}
-        </div>
-        ${mine.payment ? `<div class="pay">委託金: ¥${(mine.payment).toLocaleString()} <span class="pay-note">（担当面積×単価）</span></div>` : ''}
+        <div class="label">あなたの担当${mineAll.length > 1 ? `（${mineAll.length}機械）` : ''}</div>
+        ${detailRows}
+        ${totalPay ? `<div class="pay">委託金${mineAll.length > 1 ? '合計' : ''}: ¥${totalPay.toLocaleString()} <span class="pay-note">（担当面積×単価）</span></div>` : ''}
       </div>
       ${others.length > 0 ? `
         <div class="other-members">
