@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-16T21:55:44.607Z",
+  "updated": "2026-05-17T03:04:22.898Z",
   "members": [
     {
       "id": "m_1778968544441_617",
@@ -13,6 +13,7 @@
         "karibaraiki"
       ],
       "availableDays": [
+        "fri",
         "sat",
         "sun"
       ],
@@ -23,7 +24,8 @@
       "email": "yaseijino@gmail.com",
       "birthday": "4/1/1990",
       "status": "active",
-      "registeredAt": "2026-05-16T21:55:44.441Z"
+      "registeredAt": "2026-05-16T21:55:44.441Z",
+      "updatedAt": "2026-05-17T03:04:22.898Z"
     }
   ],
   "estimates": [],
