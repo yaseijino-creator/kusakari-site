@@ -309,6 +309,9 @@ main {
 .want-btn:hover, .want-btn:active {
   background: #225f3c;
 }
+.want-btn-machine + .want-btn-machine {
+  margin-top: 8px;
+}
 
 /* 案件一覧（タブ2）の追加スタイル */
 .list-row {
@@ -698,11 +701,19 @@ function recruitingJobs() {
 
 // 草刈り隊メンバーLINE OA（@561zguua）にプリ入力でトーク起動
 const RECRUIT_LINE_OA_ID = '@561zguua';
-function lineWantUrl(est) {
+const MACHINE_LABELS_TEAM = {
+  karibaraiki: '🌿 仮払機',
+  homen: '🚜 方面草刈機',
+  hammer: '⚙️ ハンマーモア'
+};
+function lineWantUrl(est, machineKey) {
   const label = est.customerLabel || '案件';
   const date = est.scheduledDate ? ` (${formatDate(est.scheduledDate)})` : '';
   const myName = (me && me.name) ? me.name : 'メンバー';
-  const text = `${myName}です。\n「${label}${date}」の案件、やりたいです！`;
+  const machineLabel = machineKey ? MACHINE_LABELS_TEAM[machineKey] || machineKey : '';
+  const text = machineKey
+    ? `${myName}です。\n「${label}${date}」の案件、${machineLabel} でやりたいです！`
+    : `${myName}です。\n「${label}${date}」の案件、やりたいです！`;
   return `https://line.me/R/oaMessage/${encodeURIComponent(RECRUIT_LINE_OA_ID)}/?${encodeURIComponent(text)}`;
 }
 
@@ -764,7 +775,7 @@ function renderList() {
   el.innerHTML = jobs.map(recruitingCard).join('');
 }
 
-// 募集中カード（「やりたい」ボタン付き）
+// 募集中カード（機械ごとに「やりたい」ボタン）
 function recruitingCard(est) {
   const others = est.assignments || [];
   const dateLine = est.scheduledDate
@@ -773,6 +784,28 @@ function recruitingCard(est) {
   const othersBlock = others.length > 0
     ? `<div class="other-members">現在の担当: ${others.map(o => esc((o.memberName || '?') + '(' + machineLabel(o.machine) + ')')).join(', ')}</div>`
     : `<div class="other-members">現在の担当: まだ未定</div>`;
+
+  // 機械別の募集人数を取得（recruitingByMachine 優先・なければ旧フォーマット=どれでもOK）
+  const byMachine = est.recruitingByMachine || null;
+  let buttons = '';
+  if (byMachine) {
+    const machineOrder = ['karibaraiki', 'homen', 'hammer'];
+    const wanted = machineOrder.filter(k => (byMachine[k] || 0) > 0);
+    if (wanted.length > 0) {
+      buttons = wanted.map(k => `
+        <a class="want-btn want-btn-machine" href="${lineWantUrl(est, k)}" target="_blank" rel="noopener">
+          🙋‍♂️ ${MACHINE_LABELS_TEAM[k]} でやりたい（残 ${byMachine[k]}名）
+        </a>
+      `).join('');
+    } else {
+      // recruitingByMachine が全て 0 のとき
+      buttons = `<a class="want-btn" href="${lineWantUrl(est)}" target="_blank" rel="noopener">🙋‍♂️ やりたい</a>`;
+    }
+  } else {
+    // 旧フォーマット：機械指定なし
+    buttons = `<a class="want-btn" href="${lineWantUrl(est)}" target="_blank" rel="noopener">🙋‍♂️ やりたい</a>`;
+  }
+
   return `
     <div class="job-card recruiting-card">
       <div class="recruiting-badge">📢 募集中</div>
@@ -781,9 +814,7 @@ function recruitingCard(est) {
       ${dateLine}
       ${est.siteNote ? `<div class="site-note">📝 ${esc(est.siteNote)}</div>` : ''}
       ${othersBlock}
-      <a class="want-btn" href="${lineWantUrl(est)}" target="_blank" rel="noopener">
-        🙋‍♂️ やりたい
-      </a>
+      ${buttons}
     </div>
   `;
 }
