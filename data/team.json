@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-17T23:29:29.363Z",
+  "updated": "2026-05-18T12:06:35.417Z",
   "members": [
     {
       "id": "m_1778968544441_617",
@@ -63,7 +63,8 @@
           "payment": 5999.055555555556
         }
       ],
-      "recruiting": false
+      "recruiting": false,
+      "recruitingByMachine": null
     },
     {
       "id": "e177906049859218",
@@ -73,7 +74,12 @@
       "scheduledDate": null,
       "totalArea": 500,
       "assignments": [],
-      "recruiting": true
+      "recruiting": true,
+      "recruitingByMachine": {
+        "karibaraiki": 1,
+        "homen": 1,
+        "hammer": 0
+      }
     }
   ]
 }
