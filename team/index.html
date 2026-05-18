@@ -312,6 +312,22 @@ main {
 .want-btn-machine + .want-btn-machine {
   margin-top: 8px;
 }
+.want-row {
+  margin-top: 10px;
+  background: #f8f4e7;
+  border: 1px solid #d4c897;
+  border-radius: 10px;
+  padding: 8px 10px 10px;
+}
+.want-row .want-summary {
+  font-size: 12px;
+  color: #5a4a20;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.want-row .want-btn {
+  margin-top: 0;
+}
 
 /* 案件一覧（タブ2）の追加スタイル */
 .list-row {
@@ -785,6 +801,10 @@ function recruitingCard(est) {
     ? `<div class="other-members">現在の担当: ${others.map(o => esc((o.memberName || '?') + '(' + machineLabel(o.machine) + ')')).join(', ')}</div>`
     : `<div class="other-members">現在の担当: まだ未定</div>`;
 
+  // 機械別の予定（machinesPlan）を Map にしておく
+  const planByKey = {};
+  (est.machinesPlan || []).forEach(m => { planByKey[m.key] = m; });
+
   // 機械別の募集人数を取得（recruitingByMachine 優先・なければ旧フォーマット=どれでもOK）
   const byMachine = est.recruitingByMachine || null;
   let buttons = '';
@@ -792,11 +812,30 @@ function recruitingCard(est) {
     const machineOrder = ['karibaraiki', 'homen', 'hammer'];
     const wanted = machineOrder.filter(k => (byMachine[k] || 0) > 0);
     if (wanted.length > 0) {
-      buttons = wanted.map(k => `
-        <a class="want-btn want-btn-machine" href="${lineWantUrl(est, k)}" target="_blank" rel="noopener">
-          🙋‍♂️ ${MACHINE_LABELS_TEAM[k]} でやりたい（残 ${byMachine[k]}名）
-        </a>
-      `).join('');
+      buttons = wanted.map(k => {
+        const plan = planByKey[k];
+        const recruitN = byMachine[k];
+        // 既存の担当者を差し引いて、1人あたり目安を出す
+        const assignedSame = (est.assignments || []).filter(a => a.machine === k);
+        const assignedArea = assignedSame.reduce((s, a) => s + (a.area || 0), 0);
+        const assignedHours = assignedSame.reduce((s, a) => s + (a.hours || 0), 0);
+        const assignedPay = assignedSame.reduce((s, a) => s + (a.payment || 0), 0);
+        const remainArea = plan ? Math.max(0, plan.area - assignedArea) : 0;
+        const remainHours = plan ? Math.max(0, plan.hours - assignedHours) : 0;
+        const remainPay = plan ? Math.max(0, plan.outsrc - assignedPay) : 0;
+        const perAreaTxt = (remainArea > 0 && recruitN > 0) ? `${Math.round(remainArea / recruitN)}㎡` : '';
+        const perHoursTxt = (remainHours > 0 && recruitN > 0) ? `目安 ${formatHours(remainHours / recruitN)}` : '';
+        const perPayTxt = (remainPay > 0 && recruitN > 0) ? `¥${Math.round(remainPay / recruitN).toLocaleString()}` : '';
+        const summary = [perAreaTxt, perHoursTxt, perPayTxt].filter(Boolean).join(' / ');
+        return `
+          <div class="want-row">
+            ${summary ? `<div class="want-summary">1人あたり ${summary}</div>` : ''}
+            <a class="want-btn want-btn-machine" href="${lineWantUrl(est, k)}" target="_blank" rel="noopener">
+              🙋‍♂️ ${MACHINE_LABELS_TEAM[k]} でやりたい（残 ${recruitN}名）
+            </a>
+          </div>
+        `;
+      }).join('');
     } else {
       // recruitingByMachine が全て 0 のとき
       buttons = `<a class="want-btn" href="${lineWantUrl(est)}" target="_blank" rel="noopener">🙋‍♂️ やりたい</a>`;
