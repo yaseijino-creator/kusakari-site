@@ -356,10 +356,13 @@
   .service-icon { text-align: center; }
   .service-icon .circle {
     width: 90px; height: 90px; border-radius: 50%;
-    background: var(--green-deep); color: #fff;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 36px; margin: 0 auto 12px;
+    overflow: hidden;
+    margin: 0 auto 12px;
     transition: transform .3s;
+  }
+  .service-icon .circle img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
   }
   .service-icon:hover .circle { transform: scale(1.08) rotate(5deg); }
   .service-icon .title {
@@ -992,22 +995,22 @@
     </div>
     <div class="service-icons">
       <div class="service-icon reveal">
-        <div class="circle">🌾</div>
+        <div class="circle"><img src="img/service-rice.webp" alt="田畦・法面"></div>
         <div class="title">田畦・法面</div>
         <div class="desc">農地まわりの草刈り</div>
       </div>
       <div class="service-icon reveal">
-        <div class="circle">⛰</div>
+        <div class="circle"><img src="img/service-slope.webp" alt="傾斜地・斜面"></div>
         <div class="title">傾斜地・斜面</div>
         <div class="desc">足場の悪い場所も</div>
       </div>
       <div class="service-icon reveal">
-        <div class="circle">🏡</div>
+        <div class="circle"><img src="img/service-house.webp" alt="空き地・空き家"></div>
         <div class="title">空き地・空き家</div>
         <div class="desc">ご実家の管理も</div>
       </div>
       <div class="service-icon reveal">
-        <div class="circle">🪨</div>
+        <div class="circle"><img src="img/service-rock.webp" alt="障害物のある現場"></div>
         <div class="title">障害物のある現場</div>
         <div class="desc">石・樹木まわり</div>
       </div>
