@@ -211,11 +211,21 @@ main {
   margin-bottom: 4px;
 }
 .job-card .area {
-  font-size: 13px;
-  color: var(--gray);
+  font-size: 14px;
+  color: var(--text);
   margin-bottom: 10px;
+  background: #eef5ee;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-weight: 600;
 }
-.job-card .area::before { content: '📍 '; }
+.job-card .area::before { content: '📍 地域: '; color: var(--green-dark); font-weight: 700; }
+.job-card .area .total-area {
+  margin-left: 8px;
+  color: #777;
+  font-size: 12px;
+  font-weight: 400;
+}
 .job-card .site-note {
   font-size: 12px;
   color: #666;
@@ -223,6 +233,84 @@ main {
   padding: 6px 10px;
   border-radius: 6px;
   margin-bottom: 10px;
+}
+/* 詳細ボタン */
+.job-detail {
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fafafa;
+}
+.job-detail summary {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green-dark);
+  list-style: none;
+  position: relative;
+  user-select: none;
+}
+.job-detail summary::-webkit-details-marker { display: none; }
+.job-detail summary::after {
+  content: '▼';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.2s;
+  font-size: 10px;
+  color: var(--gray);
+}
+.job-detail[open] summary::after { transform: translateY(-50%) rotate(180deg); }
+.job-detail .detail-content {
+  padding: 4px 14px 14px;
+  border-top: 1px dashed var(--border);
+}
+.job-detail .detail-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #a04040;
+  margin: 8px 0 4px;
+}
+.job-detail .detail-body {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  background: #fff;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+/* 機械ごとの担当行（強化版） */
+.job-card .my-assignment .machine-row {
+  background: white;
+  border: 1px solid #f0d870;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin-top: 6px;
+}
+.job-card .my-assignment .machine-row .machine-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #8a6a10;
+  margin-bottom: 4px;
+}
+.job-card .my-assignment .machine-row .machine-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+.job-card .my-assignment .machine-row .machine-info span {
+  white-space: nowrap;
+}
+.job-card .my-assignment .machine-row .pay-amount {
+  color: #6a5010;
+  font-weight: 700;
 }
 .job-card .assignments {
   border-top: 1px dashed var(--border);
@@ -863,25 +951,38 @@ function jobCard(est) {
   const mineAll = myAssignments(est);
   const others = otherAssignments(est);
   const totalPay = mineAll.reduce((s, a) => s + (a.payment || 0), 0);
-  const detailRows = mineAll.map(a => `
-    <div class="detail">
-      ${esc(machineLabel(a.machine))}${a.area ? '・' + a.area + '㎡' : ''}${a.hours ? `<span class="hours-hint">・目安 ${formatHours(a.hours)}</span>` : ''}
+  const machineRows = mineAll.map(a => `
+    <div class="machine-row">
+      <div class="machine-name">${esc(machineLabel(a.machine))}</div>
+      <div class="machine-info">
+        ${a.area ? `<span>📐 面積: <b>${a.area.toLocaleString()}㎡</b></span>` : ''}
+        ${a.payment ? `<span class="pay-amount">💰 委託金: ¥${a.payment.toLocaleString()}</span>` : ''}
+        ${a.hours ? `<span>⏱ 目安: ${formatHours(a.hours)}</span>` : ''}
+      </div>
     </div>
   `).join('');
   return `
     <div class="job-card">
       <div class="customer">${esc(est.customerLabel || '—')}</div>
-      <div class="area">${esc(est.addressArea || '')}${est.totalArea ? ' / ' + est.totalArea + '㎡' : ''}</div>
-      ${est.siteNote ? `<div class="site-note">📝 ${esc(est.siteNote)}</div>` : ''}
+      <div class="area">${esc(est.addressArea || '未設定')}${est.totalArea ? `<span class="total-area">合計 ${est.totalArea.toLocaleString()}㎡</span>` : ''}</div>
       <div class="my-assignment">
         <div class="label">あなたの担当${mineAll.length > 1 ? `（${mineAll.length}機械）` : ''}</div>
-        ${detailRows}
-        ${totalPay ? `<div class="pay">委託金${mineAll.length > 1 ? '合計' : ''}: ¥${totalPay.toLocaleString()} <span class="pay-note">（担当面積×単価）</span></div>` : ''}
+        ${machineRows}
+        ${totalPay ? `<div class="pay" style="margin-top:8px;font-size:14px;font-weight:700;color:#6a5010;text-align:right;">委託金${mineAll.length > 1 ? '合計' : ''}: ¥${totalPay.toLocaleString()}</div>` : ''}
       </div>
       ${others.length > 0 ? `
         <div class="other-members">
           他の担当: ${others.map(o => esc((o.memberName || '?') + '(' + machineLabel(o.machine) + ')')).join(', ')}
         </div>
+      ` : ''}
+      ${est.siteNote ? `
+        <details class="job-detail">
+          <summary>📋 詳細・注意事項を見る</summary>
+          <div class="detail-content">
+            <div class="detail-label">⚠️ 注意事項・現場メモ</div>
+            <div class="detail-body">${esc(est.siteNote)}</div>
+          </div>
+        </details>
       ` : ''}
     </div>
   `;
