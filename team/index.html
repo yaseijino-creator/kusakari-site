@@ -937,11 +937,19 @@ function recruitingCard(est) {
     <div class="job-card recruiting-card">
       <div class="recruiting-badge">📢 募集中</div>
       <div class="customer">${esc(est.customerLabel || '—')}</div>
-      <div class="area">${esc(est.addressArea || '')}${est.totalArea ? ' / ' + est.totalArea + '㎡' : ''}</div>
+      <div class="area">${esc(est.addressArea || '未設定')}${est.totalArea ? `<span class="total-area">合計 ${est.totalArea.toLocaleString()}㎡</span>` : ''}</div>
       ${dateLine}
-      ${est.siteNote ? `<div class="site-note">📝 ${esc(est.siteNote)}</div>` : ''}
       ${othersBlock}
       ${buttons}
+      ${est.siteNote ? `
+        <details class="job-detail">
+          <summary>📋 詳細・注意事項を見る</summary>
+          <div class="detail-content">
+            <div class="detail-label">⚠️ 注意事項・現場メモ</div>
+            <div class="detail-body">${esc(est.siteNote)}</div>
+          </div>
+        </details>
+      ` : ''}
     </div>
   `;
 }
