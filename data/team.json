@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-18T12:06:41.143Z",
+  "updated": "2026-05-28T13:00:41.695Z",
   "members": [
     {
       "id": "m_1778968544441_617",
@@ -33,7 +33,7 @@
     {
       "id": "e17774677580710",
       "customerLabel": "柿永平地",
-      "addressArea": "",
+      "addressArea": "大野原",
       "siteNote": "",
       "scheduledDate": "2026-04-30",
       "totalArea": 1800,
@@ -64,7 +64,27 @@
         }
       ],
       "recruiting": false,
-      "recruitingByMachine": null
+      "recruitingByMachine": null,
+      "machinesPlan": [
+        {
+          "key": "karibaraiki",
+          "hours": 1,
+          "outsrc": 2000,
+          "area": 87
+        },
+        {
+          "key": "homen",
+          "hours": 1,
+          "outsrc": 3000,
+          "area": 412
+        },
+        {
+          "key": "hammer",
+          "hours": 1.5,
+          "outsrc": 6000,
+          "area": 1301
+        }
+      ]
     },
     {
       "id": "e177906049859218",
@@ -79,7 +99,15 @@
         "karibaraiki": 1,
         "homen": 1,
         "hammer": 0
-      }
+      },
+      "machinesPlan": [
+        {
+          "key": "homen",
+          "hours": 1.75,
+          "outsrc": 5250,
+          "area": 500
+        }
+      ]
     }
   ]
 }
